@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /*
  * Class with functions for I/O
@@ -17,5 +19,10 @@ public class IOutilities {
             System.err.println("File: " + file + " not found");
         }
         return new String[]{"Empty"};
+    }
+
+    public static Stream<String> streamSupplier(final String[] input){
+        Supplier<Stream<String>> supplier = () -> Stream.of(input);
+        return supplier.get();
     }
 }
