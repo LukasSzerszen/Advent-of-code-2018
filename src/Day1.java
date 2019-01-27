@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -15,12 +14,12 @@ public class Day1 {
 
     }
 
-    public static void star1Solution(String[] input){
+    public static void star1Solution(final String[] input){
         Stream<String> inputStream = streamSupplier(input);
         System.out.println(calibrateOnce(inputStream));
     }
 
-    public static void star2Solution(String[] input){
+    public static void star2Solution(final String[] input){
         System.out.println(calibrateFully(input));
     }
 
