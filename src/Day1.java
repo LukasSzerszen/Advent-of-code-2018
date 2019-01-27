@@ -1,14 +1,12 @@
-import java.io.*;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 
 public class Day1 {
     private static HashSet<Integer> frequencies = new HashSet();
 
     public static void main(String[] args){
-        String[] input = readInput(args[0]);
+        String[] input = IOutilities.readFileInputAsArray(args[0]);
         star1Solution(input);
         star2Solution(input);
 
@@ -52,16 +50,4 @@ public class Day1 {
             }
         }
     }
-
-    public static String[] readInput(final String file){
-        try{
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            return bufferedReader.lines().toArray(String[]::new);
-        }catch (FileNotFoundException e){
-            System.err.println("File: " + file + " not found");
-        }
-        return new String[]{"Empty"};
-    }
-
-
-    }
+}
