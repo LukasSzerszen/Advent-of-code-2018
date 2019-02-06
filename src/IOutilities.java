@@ -10,7 +10,8 @@ import java.util.stream.Stream;
 public class IOutilities {
 
     /*
-     * Takes a file path and returns contents as a array of Strings */
+     * Takes a file path and returns contents as a array of Strings
+     */
     public static String[] readFileInputAsArray(final String file){
         try{
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
