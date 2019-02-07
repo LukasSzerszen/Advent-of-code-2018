@@ -4,12 +4,11 @@ import java.util.stream.Collectors;
 public class Day2 {
     private static int twoLetterIDs = 0;
     private static int threeLetterIDs = 0;
-    private static HashSet<String> validIDs = new HashSet();
 
     public static void main(String[] args) {
         String[] input = IOutilities.readFileInputAsArray(args[0]);
         System.out.println(star1Solution(input));
-        System.out.println(star2Solution());
+        System.out.println(star2Solution(input));
     }
 
     public static int star1Solution(final String[] boxIds) {
@@ -17,11 +16,9 @@ public class Day2 {
         return checksum();
     }
 
-    public static String star2Solution(){
-        //required star1Solution to have been run such that validIDs is populated
-        return commonChars();
+    public static String star2Solution(String[] input){
+        return commonChars(input);
     }
-
 
     public static void countTwoOrThreeLetterIDs(final String[] boxIDs) {
         for (String boxID : boxIDs) {
@@ -33,31 +30,30 @@ public class Day2 {
                 if (freq == 2 && !hasTwoLetter) {
                     twoLetterIDs++;
                     hasTwoLetter = true;
-                    validIDs.add(boxID);
                 } else if (freq == 3 && !hasThreeLetter) {
                     threeLetterIDs++;
                     hasThreeLetter = true;
-                    validIDs.add(boxID);
                 }
             }
         }
     }
 
-    public static String commonChars(){
-        for(String boxID : validIDs){
-            for(String comparingID: validIDs){
-                if(boxID.equals(comparingID)){
-                    continue; //the same id
-                }
-                String diffCharsBoxID = boxID.replaceAll( "[" + comparingID + "]", "");
-                String diffCharsCompareID = comparingID.replaceAll("[" + boxID + "]", "");
-                if(diffCharsBoxID.length() == 1 && diffCharsCompareID.length() == 1){
-                    int boxIDIndex =boxID.indexOf(diffCharsBoxID);
-                    int comparingIDIndex = comparingID.indexOf(diffCharsCompareID);
-                    if(boxIDIndex == comparingIDIndex){
-                        return boxID.replaceAll("[" + diffCharsBoxID + "]", "");
+    public static String commonChars(final String[] boxIDs){
+        for(String boxID : boxIDs){
+            for(String comparingID: boxIDs){
+                int index = -1;
+                int diff = 0;
+                for(int i = 0; i< boxID.length(); i++){
+                    if(boxID.charAt(i) != comparingID.charAt(i)){
+                        diff++;
+                        index = i;
                     }
                 }
+                if(diff == 1){
+                    StringBuilder builder = new StringBuilder(boxID);
+                    return builder.deleteCharAt(index).toString();
+                }
+
             }
         }
         return "NO ID";
