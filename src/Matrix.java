@@ -2,8 +2,6 @@
  * A generic Matrix class.
  */
 public class Matrix<T> {
-    private final double rows;
-    private final double columns;
     private T[][] data;
 
     /**
@@ -12,8 +10,6 @@ public class Matrix<T> {
      * @param columns amount of columns
      */
     public Matrix(final int rows, final int columns){
-        this.rows= rows;
-        this.columns = columns;
         data = (T[][]) new Object[rows][columns];
     }
 
@@ -52,15 +48,15 @@ public class Matrix<T> {
      * @return amount of rows
      */
     public double getRows(){
-        return rows;
+        return data.length;
     }
 
     /**
      * Get the number of columns
-     * @return columns
+     * @return amount of columns
      */
     public double getColumns(){
-        return columns;
+        return data[0].length;
     }
 
 }
