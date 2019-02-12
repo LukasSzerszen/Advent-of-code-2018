@@ -1,8 +1,14 @@
+
 /**
  * A generic Matrix class.
  */
 public class Matrix<T> {
     private T[][] data;
+    private static final int DEFAULT_INITIAL_SIZE = 10001;
+
+    public Matrix(){
+        data = (T[][]) new Object[DEFAULT_INITIAL_SIZE][DEFAULT_INITIAL_SIZE];
+    }
 
     /**
      * Instatiate a M x N Matrix

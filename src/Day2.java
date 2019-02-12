@@ -17,7 +17,7 @@ public class Day2 {
     }
 
     public static String star2Solution(String[] input){
-        return commonChars(input);
+        return commonChars(input).orElse("No ID was found");
     }
 
     public static void countTwoOrThreeLetterIDs(final String[] boxIDs) {
@@ -38,7 +38,7 @@ public class Day2 {
         }
     }
 
-    public static String commonChars(final String[] boxIDs){
+    public static Optional<String> commonChars(final String[] boxIDs){
         for(String boxID : boxIDs){
             for(String comparingID: boxIDs){
                 int index = -1;
@@ -51,12 +51,12 @@ public class Day2 {
                 }
                 if(diff == 1){
                     StringBuilder builder = new StringBuilder(boxID);
-                    return builder.deleteCharAt(index).toString();
+                   return Optional.of(builder.deleteCharAt(index).toString());
                 }
 
             }
         }
-        return "NO ID";
+        return Optional.empty();
     }
 
     public static int checksum() {
