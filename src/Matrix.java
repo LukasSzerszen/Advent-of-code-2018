@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 /**
  * A generic Matrix class.

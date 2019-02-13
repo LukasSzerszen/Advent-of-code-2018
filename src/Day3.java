@@ -1,37 +1,42 @@
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class Day3 {
-    private Matrix<Boolean> fabric;
-    private ArrayList<Claim> claims;
 
-    public Day3(){
-        this.fabric = new Matrix<Boolean>();
-        this.claims = new ArrayList<Claim>();
+    public static void main(String[] args) {
+        final ArrayList<Claim> claims = parseDay3Input(args[0]);
+
+        Matrix<Boolean> fabric = new Matrix<>();
+        System.out.println(solutionStar1(fabric, claims));
+
+        Matrix<HashSet<Integer>> fabric2 = new Matrix<>();
+        System.out.println(solutionStar2(fabric2, claims));
     }
 
-    public static void main(String[] args){
-        Day3 solution = new Day3();
-        solution.claims = solution.parseDay3Input(args[0]);
-        System.out.println(solution.squaredOverlap());
-        System.out.println(solution.uniqueID());
+    public static int solutionStar1(final Matrix<Boolean> fabric, final ArrayList<Claim> claims) {
+        return squaredOverlap(fabric, claims);
     }
 
-    public int squaredOverlap(){
+    public static int solutionStar2(final Matrix<HashSet<Integer>> fabric, final ArrayList<Claim> claims) {
+        populateMatrix(fabric,claims);
+        final HashSet<Integer> overlappingIDs = new HashSet<>();
+        return uniqueID(fabric,overlappingIDs,claims);
+    }
+
+    public static int squaredOverlap(final Matrix<Boolean> fabric, final ArrayList<Claim> claims) {
         int squaredOverlap = 0;
-        for(Claim claim : claims){
+        for (Claim claim : claims) {
             int topPadding = claim.topPadding;
             int leftPadding = claim.leftPadding;
-            for(int i = 1; i <= claim.width; i++){
-                for(int j = 1; j <= claim.length; j++){
-                    if(fabric.empty(topPadding+j, leftPadding+i)){
-                        fabric.insert(topPadding +j,leftPadding + i, false);
-                    }else if(!fabric.get(topPadding +j,leftPadding + i)){
-                        fabric.insert(topPadding +j,leftPadding + i, true);
+            for (int i = 1; i <= claim.width; i++) {
+                for (int j = 1; j <= claim.length; j++) {
+                    if (fabric.empty(topPadding + j, leftPadding + i)) {
+                        fabric.insert(topPadding + j, leftPadding + i, false);
+                    } else if (!fabric.get(topPadding + j, leftPadding + i)) {
+                        fabric.insert(topPadding + j, leftPadding + i, true);
                         squaredOverlap++;
                     }
 
@@ -42,46 +47,83 @@ public class Day3 {
         return squaredOverlap;
     }
 
-    public int uniqueID(){
-        HashMap<Integer,Boolean> IDoverlap = new HashMap<>();
-        Matrix<Integer> matrix = new Matrix<>();
-        for(Claim claim : claims){
+    public static int uniqueID(final Matrix<HashSet<Integer>> fabric, final ArrayList<Claim> claims) {
+        for (Claim claim : claims) {
             int topPadding = claim.topPadding;
             int leftPadding = claim.leftPadding;
-            for(int i = 1; i <= claim.width; i++){
-                for(int j = 1; j <= claim.length; j++){
-                    if(matrix.empty(topPadding+j, leftPadding+i)){
-                        matrix.insert(topPadding +j,leftPadding + i, claim.id);
-                        if(IDoverlap.containsKey(claim.id) && IDoverlap.get(claim.id)){
-                            continue;
-                        }else{
-                        IDoverlap.put(claim.id,false);}
-                    }else{
-                        int id = matrix.get(topPadding +j,leftPadding + i);
-                        IDoverlap.put(claim.id,true);
-                        IDoverlap.put(id,true);
+            for (int i = 1 + leftPadding; i <= claim.width + leftPadding; i++) {
+                for (int j = 1 + topPadding; j <= claim.length + topPadding; j++) {
+                    if (fabric.empty(j, i)) {
+                        HashSet<Integer> idSet = new HashSet<>();
+                        idSet.add(claim.id);
+                        fabric.insert(j, i, idSet);
+                    } else {
+                        fabric.get(j, i).add(claim.id);
                     }
-
                 }
             }
         }
-        int uniqueID = -1;
-        for(int key : IDoverlap.keySet()){
-            if(!IDoverlap.get(key)){
-                uniqueID = key;
-                break;
+
+        HashSet<Integer> overlappingIDs = new HashSet<>();
+        for (int i = 0; i < fabric.getRows(); i++) {
+            for (int j = 0; j < fabric.getColumns(); j++) {
+                if (!fabric.empty(i, j) && fabric.get(i, j).size() > 1) {
+                    overlappingIDs.addAll(fabric.get(i, j));
+                }
             }
         }
-        return uniqueID;
+        int uniqueId = -1;
+        for (Claim claim : claims) {
+            if (!overlappingIDs.contains(claim.id)) {
+                uniqueId = claim.id;
+            }
+        }
+
+        return uniqueId;
     }
 
+    public static void populateMatrix(final Matrix<HashSet<Integer>> fabric, final ArrayList<Claim> claims){
+        for (Claim claim : claims) {
+            int topPadding = claim.topPadding;
+            int leftPadding = claim.leftPadding;
+            for (int i = 1 + leftPadding; i <= claim.width + leftPadding; i++) {
+                for (int j = 1 + topPadding; j <= claim.length + topPadding; j++) {
+                    if (fabric.empty(j, i)) {
+                        HashSet<Integer> idSet = new HashSet<>();
+                        idSet.add(claim.id);
+                        fabric.insert(j, i, idSet);
+                    } else {
+                        fabric.get(j, i).add(claim.id);
+                    }
+                }
+            }
+        }
+    }
 
+    public static int uniqueID(final Matrix<HashSet<Integer>> fabric, final HashSet<Integer> overlappingIDs, final ArrayList<Claim> claims){
+        for (int i = 0; i < fabric.getRows(); i++) {
+            for (int j = 0; j < fabric.getColumns(); j++) {
+                if (!fabric.empty(i, j) && fabric.get(i, j).size() > 1) {
+                    overlappingIDs.addAll(fabric.get(i, j));
+                }
+            }
+        }
+        int uniqueId = -1;
+        for (Claim claim : claims) {
+            if (!overlappingIDs.contains(claim.id)) {
+                uniqueId = claim.id;
+            }
+        }
 
-    public ArrayList<Claim> parseDay3Input(final String file){
+        return uniqueId;
+
+    }
+
+    public static ArrayList<Claim> parseDay3Input(final String file) {
         String[] rawInput = IOutilities.readFileInputAsArray(file);
         ArrayList<Claim> claims = new ArrayList<>();
         Pattern pattern = Pattern.compile("#(\\d*) @ (\\d*),(\\d*): (\\d*)x(\\d*)");
-        for(String claimSpec : rawInput){
+        for (String claimSpec : rawInput) {
             Matcher matcher = pattern.matcher(claimSpec);
             Claim claim = new Claim(matcher);
             claims.add(claim);
@@ -89,16 +131,16 @@ public class Day3 {
         return claims;
     }
 
-    private class Claim{
+    private static class Claim {
         int id;
         int leftPadding;
         int topPadding;
         int width;
         int length;
 
-        public Claim(Matcher matcher){
+        private Claim(Matcher matcher) {
             matcher.find();
-            id  = Integer.parseInt(matcher.group(1));
+            id = Integer.parseInt(matcher.group(1));
             leftPadding = Integer.parseInt(matcher.group(2));
             topPadding = Integer.parseInt(matcher.group(3));
             width = Integer.parseInt(matcher.group(4));
