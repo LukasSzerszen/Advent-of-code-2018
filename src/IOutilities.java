@@ -23,7 +23,6 @@ public class IOutilities {
     }
 
     public static Stream<String> streamSupplier(final String[] input){
-        Supplier<Stream<String>> supplier = () -> Stream.of(input);
-        return supplier.get();
+        return Stream.of(input);
     }
 }
