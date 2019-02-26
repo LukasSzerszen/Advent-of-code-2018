@@ -25,4 +25,6 @@ public class IOutilities {
     public static Stream<String> streamSupplier(final String[] input){
         return Stream.of(input);
     }
+
+
 }
