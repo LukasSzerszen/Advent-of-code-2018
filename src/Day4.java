@@ -17,9 +17,14 @@ public class Day4 {
         createGuardShifts(timeEntries,guardShifts);
         fillGuardShifts(timeEntries,guardShifts);
         int ID = mostSleptMinutesGuardIDs(guardShifts);
-        int mostSleptMinute = mostSleptMinute(ID, guardShifts.get(ID));
-        
+        int mostSleptMinute = mostSleptMinute(guardShifts.get(ID));
+
+        HashMap<Integer, ArrayList<Integer>> guardSleepFrequency = frequentlySleptMinutes(guardShifts);
+        int[] idWithMostFrequentlySlept = mostFrequentlySleptMinuteandGuardID(guardSleepFrequency);
+
+
         System.out.println(ID * mostSleptMinute);
+        System.out.println(idWithMostFrequentlySlept[0] * idWithMostFrequentlySlept[1]);
 
     }
 
@@ -57,7 +62,45 @@ public class Day4 {
         }
     }
 
-    public static int mostSleptMinute(int guardID, Matrix<Integer> shifts){
+
+
+    public static HashMap<Integer,ArrayList<Integer>> frequentlySleptMinutes(HashMap<Integer, Matrix<Integer>> guardShifts){
+        HashMap<Integer, ArrayList<Integer>> frequentlySlept = new HashMap<>();
+        for(int key : guardShifts.keySet()){
+            ArrayList<Integer> sleepFrequencey = new ArrayList<>(Collections.nCopies(60,0));
+            Collections.fill(sleepFrequencey, 0);
+            for(int i = 0; i< guardShifts.get(key).getRows(); i++){
+                for(int j = 0; j< guardShifts.get(key).getColumns()-1; j++){
+                    if(guardShifts.get(key).get(i,j) != null){
+                        sleepFrequencey.set(j, sleepFrequencey.get(j) +1);
+                    }
+                }
+            }
+            frequentlySlept.putIfAbsent(key,sleepFrequencey);
+        }
+
+        return frequentlySlept;
+
+    }
+
+    public static int[] mostFrequentlySleptMinuteandGuardID(HashMap<Integer, ArrayList<Integer>> guardSleepFrequency){
+        int id= -1;
+        int mostFrequentlySleptMinute = -1;
+        int mostFrequentlySleptValue = -1;
+        for(int guardID : guardSleepFrequency.keySet()){
+            for(int i = 0; i < guardSleepFrequency.get(guardID).size(); i++){
+                if(mostFrequentlySleptValue < guardSleepFrequency.get(guardID).get(i)){
+                    id = guardID;
+                    mostFrequentlySleptMinute = i;
+                    mostFrequentlySleptValue = guardSleepFrequency.get(guardID).get(i);
+                }
+            }
+        }
+        int[] result = {id,mostFrequentlySleptMinute};
+        return result;
+    }
+
+    public static int mostSleptMinute( Matrix<Integer> shifts){
         int mostSleptMinute= -1;
         Matrix<Integer> minutes = new Matrix<Integer>(1,60);
         for(int i = 0; i < shifts.getRows(); i++){
@@ -83,7 +126,6 @@ public class Day4 {
     }
 
     public static int mostSleptMinutesGuardIDs(final HashMap<Integer, Matrix<Integer>> guardShifts){
-        ArrayList<Integer> IDs = new ArrayList<>();
         HashMap<Integer,Integer> IDtoMinutesSlept = new HashMap<>();
         int ID = -1;
         int sum = -1;
